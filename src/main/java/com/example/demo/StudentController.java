@@ -37,9 +37,27 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student student) {
+        Student existingStudent = studentService.getStudentById(id);
+        if (existingStudent != null) {
+            existingStudent.setName(student.getName());
+            existingStudent.setAge(student.getAge());
+            Student updatedStudent = studentService.saveStudent(existingStudent);
+            return ResponseEntity.ok(updatedStudent);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/customQuery")
+    public List<Student> customQueryMethod() {
+        return studentService.findStudentsByAgeGreaterThan(20);
     }
 }
